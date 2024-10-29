@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Логи пользователей</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            padding: 5px;
+            border-bottom: 1px solid #ccc;
+        }
+    </style>
+    <style>
+        /* Кастомный стиль для скроллбара */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 10px; /* Ширина скроллбара */
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background-color: #1f2937; /* Цвет фона скроллбара (темно-серый) */
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #4b5563; /* Цвет ползунка (серый) */
+            border-radius: 5px; /* Округлённые углы */
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background-color: #9ca3af; /* Цвет ползунка при наведении (светло-серый) */
+        }
+    </style>
+    <script src="https://unpkg.com/vue@3.2.37/dist/vue.global.js"></script> <!-- Обновленный URL для Vue 3 -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"> <!-- Подключение Tailwind CSS -->
+</head>
+<body class="bg-gray-900 text-white font-mono">
+    <div id="app" class="max-w-6xl mx-auto p-6">
+        <h1 class="text-2xl font-bold mb-4" style="text-align: center;" >Логи пользователей</h1>
+        <div class="bg-gray-800 rounded-lg shadow-lg overflow-y-auto custom-scrollbar" style="max-height: 80vh;" ref="logContainer"> <!-- Контейнер с прокруткой -->
+            <ul>
+                <li style="cursor: pointer;" v-for="log in logs" :key="log" class="p-2 border-b border-gray-700 hover:bg-gray-700 transition">
+                    {{ log }}
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const { createApp, ref, onMounted } = Vue
+        const protocol = 'http://'  // При деплое поменять на 'https://'
+        const apiDomen = 'localhost:8000'  // При деплое поменять на домен где расположен API
+        const endpoint = '/logs/get_logs'
+        const apiEndpoint = protocol + apiDomen + endpoint  // Полный путь к ендпоинту
+        const pauseTime = 5  // пауза между запросами к API(количество секунд)
+
+        createApp({
+            setup() {
+                const logs = ref([])
+                const isFetching = ref(false)
+                const logContainer = ref(null) // Ссылка на контейнер логов
+
+                const fetchLogs = async () => {
+                    if (isFetching.value) return // Если уже идет запрос, выходим
+                    isFetching.value = true // Устанавливаем флаг
+                    try {
+                        const response = await fetch('http://localhost:8000/logs/get_logs', {
+                            credentials: 'include' // Включает отправку куки с запросом и сохранение полученных куки
+                        })
+                        if (!response.ok) {
+                            throw new Error('Ошибка при получении логов')
+                        }
+                        const data = await response.json()
+                        updateLogs(data.logs) // Обновляем логи
+                    } catch (error) {
+                        console.error(error)
+                    } finally {
+                        console.log('Сделан запрос') // Выводим сообщение в консоль
+                        isFetching.value = false // Сбрасываем флаг
+                    }
+                }
+
+                const updateLogs = (newLogs) => {
+                    newLogs.forEach(log => {
+                        // Проверяем, есть ли уже этот лог в текущем массиве
+                        if (!logs.value.includes(log)) {
+                            logs.value.push(log) // Добавляем новый лог
+                        }
+                    })
+                    if (logs.value.length > 100) {  // Ограничиваем количество логов до 100
+                        logs.value.splice(0, logs.value.length - 100) // Удаляем старые логи, оставляя только последние 100
+                    }
+                    setTimeout(scrollToBottom, 0) // Прокручиваем вниз после обновления логов
+                }
+
+                const scrollToBottom = () => {
+                    if (logContainer.value) {
+                        logContainer.value.scrollTop = logContainer.value.scrollHeight // Прокручиваем вниз
+                    }
+                }
+
+                onMounted(() => {
+                    fetchLogs() // Выполняем первый запрос
+                    setInterval(fetchLogs, pauseTime * 1000) // Выполняем запрос каждые N секунд
+                })
+
+                return { logs, logContainer }
+            }
+        }).mount('#app')
+    </script>
+</body>
+</html>
