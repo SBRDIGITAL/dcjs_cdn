@@ -66,7 +66,7 @@
                     if (isFetching.value) return // Если уже идет запрос, выходим
                     isFetching.value = true // Устанавливаем флаг
                     try {
-                        const response = await fetch('http://localhost:8000/logs/get_logs', {
+                        const response = await fetch(apiEndpoint, {
                             credentials: 'include' // Включает отправку куки с запросом и сохранение полученных куки
                         })
                         if (!response.ok) {
