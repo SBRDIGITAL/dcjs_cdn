@@ -21,8 +21,8 @@ createApp({
             dataCollectorScriptUrl: dataCollectorScriptUrl
         };
     },
-    async mounted() {
+    mounted() {
         document.title = this.title;  // Заголовок сайта
-        ScriptsUtils.createScript('dcUrlScript', true, this.dataCollectorScriptUrl)
+        ScriptsUtils.createScript('dcUrlScript', false, this.dataCollectorScriptUrl)
     }
 }).mount('#app');
