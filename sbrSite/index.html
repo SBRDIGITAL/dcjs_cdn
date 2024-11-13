@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>title</title>
+    <link href="./src/css/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(to bottom, #1e3a8a, #3b82f6);
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center h-screen">
+    <div id="app" class="text-center text-white" v-cloak>
+        <h1 class="text-4xl md:text-6xl lg:text-8xl font-bold">{{ heading }}</h1>
+        <p class="mt-4 text-xl md:text-2xl lg:text-4xl">{{ description }}</p>
+        
+        <a :href="link" target="_blank" class="tg_logo mt-6 inline-block">
+            <img :src="imageSrc" :alt="imageAlt"
+            class="w-20 h-20 md:w-36 md:h-36 lg:w-46 lg:h-46" />
+        </a>
+        
+    </div>
+    
+    <script src="./src/modules/vue.global.js"></script>
+    <script type="module" src="./src/scripts/mainPage.js"></script>
+</body>
+</html>
