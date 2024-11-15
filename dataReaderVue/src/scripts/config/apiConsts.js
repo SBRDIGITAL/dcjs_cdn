@@ -22,7 +22,8 @@ export class ApiConfig {
         this.apiUrl = this.protocol + this.domen + '/'  // Полный URL адрес, по которому расположен API.
     }
 }
-const dcApiConfig = new ApiConfig('https://', 'sbrdigital.pro')
+const dcApiConfig = new ApiConfig('https://', 'sbrdigital.pro')  // Для продакшена
+// const dcApiConfig = new ApiConfig()  // для локальной работы
 
 
 
