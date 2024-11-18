@@ -10,32 +10,50 @@
         [v-cloak] {
             display: none;
         }
+        #app {
+            max-height: 90vh;
+            overflow: hidden;
+        }
+        .table-container {
+            max-height: 100%;
+            overflow-y: auto;
+            border: 1px solid #d1d5db;
+            position: relative;
+        }
+        table {
+            border-spacing: 0;
+        }
+        .fixed-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: calc(100% - 2rem); /* Учитываем отступы контейнера */
+            z-index: 1000;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .placeholder-header {
+            visibility: hidden;
+        }
         .table-auto th, .table-auto td {
-            max-width: 200px; /* Максимальная ширина столбца */
-            word-wrap: break-word; /* Перенос слов на новую строку */
-            white-space: normal; /* Разрешить перенос строк */
+            max-width: 200px;
+            word-wrap: break-word;
+            white-space: normal;
         }
     </style>
 </head>
 <body>
-    <!-- Форма авторизации -->
-    <!-- <form v-if="isFormVisible" @submit.prevent="login" class="w-1/3 loginForm">
-        <input type="password" v-model="password" placeholder="Введите пароль" class="border p-2 rounded w-full" required>
-        <button type="submit" class="bg-blue-500 text-white p-2 rounded mt-2 w-full">Войти</button>
-    </form>
- -->
-
     <div id="app" class="flex flex-col items-center justify-center h-screen p-4" v-cloak>
         <h1 class="text-3xl mb-4">{{ message }}</h1>
-    
+
         <!-- Сообщение об ошибке -->
         <div v-if="errorMessage" class="text-red-500 mt-2">{{ errorMessage }}</div>
-    
+
         <!-- Таблица с пользователями -->
-        <div v-if="users.length > 0" class="mt-4 w-full">
+        <div v-if="users.length > 0" class="mt-4 w-full table-container" id="tableContainer">
             <div class="overflow-x-auto">
                 <table class="table-auto min-w-full border-collapse border border-gray-300">
-                    <thead>
+                    <thead id="tableHeader">
                         <tr>
                             <th class="border p-3">ID</th>
                             <th class="border p-3">MAST ID</th>
