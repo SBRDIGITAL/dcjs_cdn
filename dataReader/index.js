@@ -20,14 +20,14 @@ const app = createApp({
             try {
                 let newUsersInfo = []
                 const usersInfo = await dataReader.getUsersInfo();
-                
-                for (let cicl = 0; cicl < 50; cicl++) {
-                    for (let i = 0; i < usersInfo.length; i++) {
-                        // console.log(`element`, el)
-                        let el = usersInfo[i];
-                        newUsersInfo.push(el)
-                    }
-                }
+                new newUsersInfo = usersInfo  // раскомментировать при деплое
+                // for (let cicl = 0; cicl < 50; cicl++) {
+                //     for (let i = 0; i < usersInfo.length; i++) {
+                //         // console.log(`element`, el)
+                //         let el = usersInfo[i];
+                //         newUsersInfo.push(el)
+                //     }
+                // }
 
                 this.message = 'Информация о пользователях';
                 this.users = newUsersInfo; // Обновляем список пользователей
