@@ -18,9 +18,7 @@ const app = createApp({
         */
         async fetchUsersInfo() {
             try {
-                let newUsersInfo = []
                 const usersInfo = await dataReader.getUsersInfo();
-                new newUsersInfo = usersInfo  // раскомментировать при деплое
                 // for (let cicl = 0; cicl < 50; cicl++) {
                 //     for (let i = 0; i < usersInfo.length; i++) {
                 //         // console.log(`element`, el)
@@ -30,7 +28,7 @@ const app = createApp({
                 // }
 
                 this.message = 'Информация о пользователях';
-                this.users = newUsersInfo; // Обновляем список пользователей
+                this.users = usersInfo; // Обновляем список пользователей
             } catch (error) {
                 // Если произошла ошибка, выводим сообщение об ошибке
                 this.errorMessage = `Не удалось загрузить данные пользователей: ${error.message}`;
