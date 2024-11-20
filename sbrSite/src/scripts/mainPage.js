@@ -23,6 +23,6 @@ createApp({
     },
     mounted() {
         document.title = this.title;  // Заголовок сайта
-        ScriptsUtils.createScript('dcUrlScript', false, this.dataCollectorScriptUrl)
+        // ScriptsUtils.createScript('dcUrlScript', false, this.dataCollectorScriptUrl)
     }
 }).mount('#app');
