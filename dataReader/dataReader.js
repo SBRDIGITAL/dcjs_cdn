@@ -28,26 +28,22 @@ export class DataReader {
     */
     async getUsersInfo() {
         try {
-            let result = await RequestUtils.sendRequest(this.getUsersEndpoint);
-            
-            if ((typeof result === 'object' && result !== null) || typeof result === 'string') {
-                if (typeof result === 'string') {
-                    let jsonResult = JSON.parse(result);
-                    // console.log('jsonResult', jsonResult);
-                    return jsonResult;
-                }
-                console.log('Вернулся объект! Запрос успешно выполнен!');
-            } else if (result === 401) {
-                // Возвращаем ошибку 401
+            const result = await RequestUtils.sendRequest(this.getUsersEndpoint);
+    
+            if (result === 401) {
                 throw new Error('Ошибка 401: Не авторизованы');
-            } else {
-                // В случае неизвестной ошибки
-                throw new Error(`Неведомая ошибка: ${result}`);
             }
     
-            console.log('Результат запроса', result);
+            if (typeof result === 'string') {
+                console.log('Вернулся объект! Запрос успешно выполнен!');
+                return JSON.parse(result);
+            } else if (typeof result === 'object' && result !== null) {
+                console.log('Тип данных у result', typeof result);
+                return result;
+            }
+    
+            throw new Error(`Неведомая ошибка: ${result}`);
         } catch (error) {
-            // Бросаем ошибку для дальнейшей обработки
             throw new Error(`Ошибка при запросе данных пользователей: ${error.message}`);
         }
     }

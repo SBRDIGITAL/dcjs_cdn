@@ -6,39 +6,98 @@ import { dataReader } from './dataReader.js';
 const app = createApp({
     data() {
         return {
+            classicMessage: 'Информация о пользователях',
+            sortEndTxt: 'убыванию',
+            sortFilterByTxt: 'Фильтруем по ',
+            sortMessage: '',
             message: 'Загрузка информации о пользователях...', // Сообщение о загрузке
             users: [], // Массив для хранения информации о пользователях
             errorMessage: '',
             isFormVisible: false, // Скрываем форму
+            sortOrder: 'asc',  // Порядок сортировки
+            maxUsersCount: 0,
+            maxUsersWithContactsCount: 0,
         };
     },
     methods: {
         /**
-         * ## Метод получения данных о пользователях
+         * Преобразует строку даты в объект Date.
+         * @param {string} dateString - Строка, представляющая дату.
+         * @returns {Date} - Объект Date, созданный из строки даты.
         */
+        parseCurrentDate(dateString) {
+            return new Date(dateString);
+        },
+        /**
+         * Преобразует даты для каждого пользователя в массиве userInfo.
+         * @param {Array} userInfo - Массив объектов пользователей.
+         * @returns {Array} - Массив объектов пользователей с добавленным полем createdAtDate.
+        */
+        parseDates(userInfo) {
+            // Преобразуем время для каждого пользователя
+            userInfo.forEach(user => {
+                if (user.created_at) {
+                    user.createdAtDate = this.parseCurrentDate(user.created_at);
+                }
+            });
+            return userInfo
+        },
+        /**
+         * Получает данные о пользователях с сервера и обновляет состояние приложения.
+         * Обрабатывает ошибки, если они возникают во время запроса.
+         * @async
+         * @returns {Promise<void>}
+         */
         async fetchUsersInfo() {
             try {
-                const usersInfo = await dataReader.getUsersInfo();
-                // for (let cicl = 0; cicl < 50; cicl++) {
-                //     for (let i = 0; i < usersInfo.length; i++) {
-                //         // console.log(`element`, el)
-                //         let el = usersInfo[i];
-                //         newUsersInfo.push(el)
-                //     }
-                // }
+                this.message = this.classicMessage;
 
-                this.message = 'Информация о пользователях';
-                this.users = usersInfo; // Обновляем список пользователей
+                // Объект информации о пользователях
+                const usersInfoData = await dataReader.getUsersInfo();
+                // информация о пользователях
+                this.users = this.parseDates(JSON.parse(usersInfoData.users_info)) || []
+                // информация о кол-ве пользователей ТИП ДАННЫХ number
+                this.maxUsersCount = usersInfoData.max_users || 0
+                // информация о кол-ве пользователей с указанными контаками ТИП ДАННЫХ number
+                this.maxUsersWithContactsCount = usersInfoData.max_users_with_contacts || 0
+                
+
             } catch (error) {
                 // Если произошла ошибка, выводим сообщение об ошибке
                 this.errorMessage = `Не удалось загрузить данные пользователей: ${error.message}`;
                 console.error(error);  // Выводим ошибку в консоль
             }
-        }
+        },
+        /**
+         * Меняет текст переменной `sortMessage` в зависимости от текущего порядка сортировки.
+        */
+        changeSortMessageText() {
+            if (this.sortOrder === 'asc') {
+                this.sortEndTxt = 'убыванию'
+            } else {
+                this.sortEndTxt = 'возрастанию'
+            }
+            this.sortMessage = this.sortFilterByTxt + this.sortEndTxt
+        },
+        /**
+         * Переключает порядок сортировки пользователей и обновляет список пользователей.
+        */
+        sortUsers() {
+            this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc'; // Переключаем порядок сортировки
+            this.users = this.users.slice().reverse(); // Создаем новый массив и переворачиваем его
+            this.changeSortMessageText()
+        },
     },
+    /**
+     * Метод, который вызывается при монтировании компонента.
+     * Запрашивает данные о пользователях и устанавливает начальное сообщение о сортировке.
+     * @async
+     * @returns {Promise<void>}
+    */
     async mounted() {
+        this.sortMessage = this.sortFilterByTxt + this.sortEndTxt
         console.log("Vue приложение успешно смонтировано");
-        await this.fetchUsersInfo();  // Запрашиваем данные о пользователях при монтировании компонента
+        await this.fetchUsersInfo();  // Запрашиваем данные при монтировании компонента
     }
 });
 

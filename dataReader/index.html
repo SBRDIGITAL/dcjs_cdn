@@ -45,7 +45,15 @@
 <body>
     <div id="app" class="flex flex-col items-center justify-center h-screen p-4" v-cloak>
         <h1 class="text-3xl mb-4">{{ message }}</h1>
-
+        
+        <div v-if="users.length > 0" style="text-align: center;">
+            <h4 class="text-1xl mb-4">
+                <b>Всего пользователей с указанными контактами:</b>
+                {{ maxUsersWithContactsCount }} </h4>
+            <h4 class="text-1xl mb-4"><b>Всего пользователей:</b> {{ maxUsersCount }} </h4>
+            <h4 class="text-1xl mb-4"> {{ sortMessage }} </h4>
+        </div>
+            
         <!-- Сообщение об ошибке -->
         <div v-if="errorMessage" class="text-red-500 mt-2">{{ errorMessage }}</div>
 
@@ -55,6 +63,8 @@
                 <table class="table-auto min-w-full border-collapse border border-gray-300">
                     <thead id="tableHeader">
                         <tr>
+                            <th class="border p-3 cursor-pointer"
+                            @click="sortUsers">Дата добавления</th>
                             <th class="border p-3">ID</th>
                             <th class="border p-3">MAST ID</th>
                             <th class="border p-3">Страница входа</th>
@@ -64,7 +74,9 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="user in users" :key="user.id">
+                        <tr v-for="user in users" :key="user.index">
+                            <!-- <td class="border p-3">{{ user.created_at }}</td> -->
+                            <td class="border p-3">{{ user.createdAtDate.toLocaleString() }}</td>
                             <td class="border p-3">{{ user.id }}</td>
                             <td class="border p-3">{{ user.mastId }}</td>
                             <td class="border p-3">
