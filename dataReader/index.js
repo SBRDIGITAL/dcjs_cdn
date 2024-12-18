@@ -11,12 +11,19 @@ const app = createApp({
             sortFilterByTxt: 'Фильтруем по ',
             sortMessage: '',
             message: 'Загрузка информации о пользователях...', // Сообщение о загрузке
+            // Списки для хранения информации
             users: [], // Массив для хранения информации о пользователях
+            companies: [], // Массив для хранения информации о компаниях
+            contacts: [], // Массив для хранения информации о контактах
+            leads: [], // Массив для хранения информации о лидах
+            deals: [], // Массив для хранения информации о сделках
+            // 
             errorMessage: '',
             isFormVisible: false, // Скрываем форму
             sortOrder: 'asc',  // Порядок сортировки
             maxUsersCount: 0,
             maxUsersWithContactsCount: 0,
+            usersPercentage: null,
         };
     },
     methods: {
@@ -69,6 +76,23 @@ const app = createApp({
             }
         },
         /**
+         * Получает информацию связанную с битриксом от фронтенда 
+        */
+        async fetchBitrixData() {
+            try {
+                const bitrixInfo = await dataReader.getBitrixInfo()
+                this.companies = bitrixInfo.companies
+                this.contacts = bitrixInfo.contacts
+                this.deals = bitrixInfo.deals
+                this.leads = bitrixInfo.leads
+
+            } catch (error) {
+                // Если произошла ошибка, выводим сообщение об ошибке
+                this.errorMessage = `Не удалось загрузить данные о битриксе: ${error.message}`;
+                console.error(error);  // Выводим ошибку в консоль
+            }
+        },
+        /**
          * Меняет текст переменной `sortMessage` в зависимости от текущего порядка сортировки.
         */
         changeSortMessageText() {
@@ -87,6 +111,20 @@ const app = createApp({
             this.users = this.users.slice().reverse(); // Создаем новый массив и переворачиваем его
             this.changeSortMessageText()
         },
+        /**
+         * Расчитываем процент пользователей с указанными контактами 
+        */
+        async percentageUsersCount() {
+            let per = (this.maxUsersWithContactsCount / this.maxUsersCount) * 100
+            this.usersPercentage = `${per.toFixed(2)}%`
+        },
+        /**
+         * Вызывает методы, которые делают запросы к API 
+        */
+        async fetchData() {
+            await this.fetchUsersInfo();  // Запрашиваем данные
+            await this.fetchBitrixData();  // Запрашиваем данные инфы битрикса
+        }
     },
     /**
      * Метод, который вызывается при монтировании компонента.
@@ -97,7 +135,8 @@ const app = createApp({
     async mounted() {
         this.sortMessage = this.sortFilterByTxt + this.sortEndTxt
         console.log("Vue приложение успешно смонтировано");
-        await this.fetchUsersInfo();  // Запрашиваем данные при монтировании компонента
+        await this.fetchData();
+        await this.percentageUsersCount();  // Расчитываем процент пользователей с указанными контактами
     }
 });
 

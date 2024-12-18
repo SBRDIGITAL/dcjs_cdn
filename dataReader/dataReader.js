@@ -20,15 +20,41 @@ export class DataReader {
     constructor() {
         this.loginEndpoint = endpointsConfig.getEndpointConfig('login')
         this.getUsersEndpoint = endpointsConfig.getEndpointConfig('getUsers')
+        this.getBitrixInfoEndpoint = endpointsConfig.getEndpointConfig('getBitrixInfo')
         // this.initEndpoint = endpointsConfig.getEndpointConfig('init')
     }
     
     /**
-     * Поплучает информацию о пользователях с бекенда
+     * Получает информацию о пользователях с бекенда
     */
     async getUsersInfo() {
         try {
             const result = await RequestUtils.sendRequest(this.getUsersEndpoint);
+    
+            if (result === 401) {
+                throw new Error('Ошибка 401: Не авторизованы');
+            }
+    
+            if (typeof result === 'string') {
+                console.log('Вернулся объект! Запрос успешно выполнен!');
+                return JSON.parse(result);
+            } else if (typeof result === 'object' && result !== null) {
+                console.log('Тип данных у result', typeof result);
+                return result;
+            }
+    
+            throw new Error(`Неведомая ошибка: ${result}`);
+        } catch (error) {
+            throw new Error(`Ошибка при запросе данных пользователей: ${error.message}`);
+        }
+    }
+
+    /**
+     * Получает информацию связанную с битриксом с бекенда
+    */
+    async getBitrixInfo() {
+        try {
+            const result = await RequestUtils.sendRequest(this.getBitrixInfoEndpoint);
     
             if (result === 401) {
                 throw new Error('Ошибка 401: Не авторизованы');

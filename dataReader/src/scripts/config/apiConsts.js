@@ -49,6 +49,10 @@ export const apiEndpoints = {
         endpoint: 'get_info/get_users',
         method: POST_STR
     },
+    getBitrixInfo: {
+        endpoint: 'get_info/get_bitrix_info',
+        method: POST_STR
+    },
     init: {
         endpoint: 'dev/init',
         method: GET_STR

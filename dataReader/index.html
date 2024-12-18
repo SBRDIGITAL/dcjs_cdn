@@ -11,34 +11,34 @@
             display: none;
         }
         #app {
-            max-height: 90vh;
-            overflow: hidden;
+            min-height: 90vh;
+            height: auto;
+            display: flex;
+            flex-direction: column; /* Устанавливаем вертикальное направление для Flexbox */
+            overflow: auto; /* Включаем скролл для всего приложения */
+            padding: 1rem; /* Добавляем отступы вокруг приложения */
         }
         .table-container {
-            max-height: 100%;
-            overflow-y: auto;
+            flex: 1; /* Позволяем контейнерам таблиц занимать доступное пространство */
+            max-height: 50vh; /* Устанавливаем максимальную высоту для контейнера таблицы */
+            overflow-y: auto; /* Включаем вертикальный скролл */
             border: 1px solid #d1d5db;
-            position: relative;
+            margin-bottom: 1rem; /* Добавляем отступ снизу для разделения таблиц */
+            border-radius: 0.5rem; /* Добавляем скругление углов */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Добавляем тень для визуального эффекта */
+        }
+        .table-header {
+            margin-left: 1%;
         }
         table {
             border-spacing: 0;
-        }
-        .fixed-header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: calc(100% - 2rem); /* Учитываем отступы контейнера */
-            z-index: 1000;
-            background-color: white;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-        .placeholder-header {
-            visibility: hidden;
+            width: 100%; /* Убедитесь, что таблицы занимают 100% ширины контейнера */
         }
         .table-auto th, .table-auto td {
             max-width: 200px;
             word-wrap: break-word;
             white-space: normal;
+            padding: 0.75rem; /* Добавляем отступы для ячеек таблицы */
         }
     </style>
 </head>
@@ -49,7 +49,12 @@
         <div v-if="users.length > 0" style="text-align: center;">
             <h4 class="text-1xl mb-4">
                 <b>Всего пользователей с указанными контактами:</b>
-                {{ maxUsersWithContactsCount }} </h4>
+                {{ maxUsersWithContactsCount }}
+            </h4>
+            <h4 class="text-1xl mb-4">
+                <b>Процент пользователей с указанными контактами:</b>
+                {{ usersPercentage }}
+            </h4>
             <h4 class="text-1xl mb-4"><b>Всего пользователей:</b> {{ maxUsersCount }} </h4>
             <h4 class="text-1xl mb-4"> {{ sortMessage }} </h4>
         </div>
@@ -59,6 +64,7 @@
 
         <!-- Таблица с пользователями -->
         <div v-if="users.length > 0" class="mt-4 w-full table-container" id="tableContainer">
+            <h2 class="table-header text-2xl mb-2">Пользователи</h2>
             <div class="overflow-x-auto">
                 <table class="table-auto min-w-full border-collapse border border-gray-300">
                     <thead id="tableHeader">
@@ -92,6 +98,129 @@
                 </table>
             </div>
         </div>
+        <!--  -->
+
+        <!-- Таблица компаний -->
+        <!-- <div v-if="companies.length > 0" class="mt-4 w-full table-container"> -->
+        <div class="mt-4 w-full table-container">
+            <h2 class="table-header text-2xl mb-2">Компании</h2>
+            <div class="overflow-x-auto">
+                <table class="table-auto min-w-full border-collapse border border-gray-300">
+                    <thead>
+                        <tr>
+                            <th class="border p-3">ID</th>
+                            <th class="border p-3">Название компании</th>
+                            <th class="border p-3">ID пользователя CMS</th>
+                            <th class="border p-3">Отрасль</th>
+                            <th class="border p-3">ИНН</th>
+                            <th class="border p-3">Электронная почта</th>
+                            <th class="border p-3">Телефоны</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="company in companies" :key="company.id">
+                            <td class="border p-3">{{ company.id }}</td>
+                            <td class="border p-3">{{ company.companyName }}</td>
+                            <td class="border p-3">{{ company.cmsUserId }}</td>
+                            <td class="border p-3">{{ company.companyIndustry }}</td>
+                            <td class="border p-3">{{ company.inn }}</td>
+                            <td class="border p-3">{{ JSON.parse(company.email).join(', ') }}</td>
+                            <td class="border p-3">{{ JSON.parse(company.phones).join(', ') }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!--  -->
+
+        <!-- Таблица контактов -->
+        <!-- <div v-if="contacts.length > 0" class="mt-4 w-full table-container"> -->
+        <div class="mt-4 w-full table-container">
+            <h2 class="table-header text-2xl mb-2">Контакты</h2>
+            <div class="overflow-x-auto">
+                <table class="table-auto min-w-full border-collapse border border-gray-300">
+                    <thead>
+                        <tr>
+                            <th class="border p-3">ID</th>
+                            <th class="border p-3">Имя</th>
+                            <th class="border p-3">Фамилия</th>
+                            <th class="border p-3">Отчество</th>
+                            <th class="border p-3">Электронная почта</th>
+                            <th class="border p-3">Телефоны</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="contact in contacts" :key="contact.id">
+                            <td class="border p-3">{{ contact.id }}</td>
+                            <td class="border p-3">{{ contact.name }}</td>
+                            <td class="border p-3">{{ contact.secondName }}</td>
+                            <td class="border p-3">{{ contact.lastName }}</td>
+                            <td class="border p-3">{{ JSON.parse(contact.email).join(', ') }}</td>
+                            <td class="border p-3">{{ JSON.parse(contact.phones).join(', ') }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!--  -->
+
+        <!-- Таблица лидов -->
+        <!-- <div v-if="leads.length > 0" class="mt-4 w-full table-container"> -->
+        <div class="mt-4 w-full table-container">
+            <h2 class="table-header text-2xl mb-2">Лиды</h2>
+            <div class="overflow-x-auto">
+                <table class="table-auto min-w-full border-collapse border border-gray-300">
+                    <thead>
+                        <tr>
+                            <th class="border p-3">ID</th>
+                            <th class="border p-3">Название</th>
+                            <th class="border p-3">ID контакта</th>
+                            <th class="border p-3">Статус</th>
+                            <th class="border p-3">Описание</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="lead in leads" :key="lead.id">
+                            <td class="border p-3">{{ lead.id }}</td>
+                            <td class="border p-3">{{ lead.title }}</td>
+                            <td class="border p-3">{{ lead.contactId }}</td>
+                            <td class="border p-3">{{ lead.status }}</td>
+                            <td class="border p-3">{{ lead.desc }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!--  -->
+
+        <!-- Таблица сделок -->
+        <!-- <div v-if="deals.length > 0" class="mt-4 w-full table-container"> -->
+        <div class="mt-4 w-full table-container">
+            <h2 class="table-header text-2xl mb-2">Сделки</h2>
+            <div class="overflow-x-auto">
+                <table class="table-auto min-w-full border-collapse border border-gray-300">
+                    <thead>
+                        <tr>
+                            <th class="border p-3">ID</th>
+                            <th class="border p-3">Название</th>
+                            <th class="border p-3">ID контакта</th>
+                            <th class="border p-3">Этап</th>
+                            <th class="border p-3">Сумма</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="deal in deals" :key="deal.id">
+                            <td class="border p-3">{{ deal.id }}</td>
+                            <td class="border p-3">{{ deal.title }}</td>
+                            <td class="border p-3">{{ deal.contactId }}</td>
+                            <td class="border p-3">{{ deal.stage }}</td>
+                            <td class="border p-3">{{ deal.amount }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!--  -->
         
     </div>
 
