@@ -85,6 +85,11 @@ const app = createApp({
                 this.contacts = bitrixInfo.contacts
                 this.deals = bitrixInfo.deals
                 this.leads = bitrixInfo.leads
+                // Выводим в консоль результаты запроса
+                // console.log(`this.companies`, this.companies)
+                // console.log(`this.contacts`, this.contacts)
+                // console.log(`this.deals`, this.deals)
+                // console.log(`this.leads`, this.leads)
 
             } catch (error) {
                 // Если произошла ошибка, выводим сообщение об ошибке
